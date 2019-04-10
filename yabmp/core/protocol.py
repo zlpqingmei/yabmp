@@ -17,10 +17,13 @@ import logging
 import struct
 import traceback
 from twisted.internet import protocol
+from oslo_config import cfg
 
 from yabmp.common import constants as bmp_cons
 from yabmp.common import exception as excp
 from yabmp.message.bmp import BMPMessage
+
+CONF = cfg.CONF
 
 LOG = logging.getLogger()
 
@@ -117,15 +120,21 @@ class BMP(protocol.Protocol):
         LOG.debug('Received BMP message, type=%s' % msg_type)
         self.message.raw_body = msg_value
         LOG.debug('Decoding message...')
-        try:
-            results = self.message.consume()
-            if results:
-                # write msg file
-                self.factory.handler.on_message_received(
-                    self.client_ip, self.client_port, results, msg_type)
-            else:
-                LOG.error('decoding message failed.')
 
+        try:
+            if 'parse' in CONF.data.type:
+                data_type = 'parse'
+                results = self.message.consume()
+                if results:
+                    # write msg file
+                    self.factory.handler.on_message_received(
+                        self.client_ip, self.client_port, results, msg_type, data_type)
+                else:
+                    LOG.error('decoding message failed.')
+            if 'raw_data' in CONF.data.type:
+                data_type = 'raw_data'
+                self.factory.handler.on_message_received(
+                    self.client_ip, self.client_port, msg_value, msg_type, data_type)
         except Exception as e:
             LOG.error(e)
             error_str = traceback.format_exc()

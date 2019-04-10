@@ -28,3 +28,7 @@ bmp_options = [
                default=20000,
                help='Port the bind the BMP server to')
 ]
+
+DATA_OPTS = [
+    cfg.ListOpt('type', default=None, help='raw_data,prase'),
+]

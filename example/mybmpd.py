@@ -82,9 +82,11 @@ class ReHandler(BaseHandler):
         except Exception as e:
             LOG.info(e)
 
-    def on_message_received(self, peer_host, peer_port, msg, msg_type):
+    def on_message_received(self, peer_host, peer_port, msg, msg_type, data_type):
         """process for message received
         """
+        if data_type == 'raw_data':
+            return
         if msg_type in [0, 1, 4, 5, 6]:
             return
         elif msg_type in [2, 3]:

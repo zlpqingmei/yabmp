@@ -68,9 +68,11 @@ class DefaultHandler(BaseHandler):
         """
         pass
 
-    def on_message_received(self, peer_host, peer_port, msg, msg_type):
+    def on_message_received(self, peer_host, peer_port, msg, msg_type, data_type):
         """process for message received
         """
+        if data_type == 'raw_data':
+            return
         if msg_type in [4, 5, 6]:
             return
         peer_ip = msg[0]['addr']
